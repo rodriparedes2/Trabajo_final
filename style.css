@@ -1,4 +1,4 @@
-/* Estilos generales */
+/* Estilo base inicial para nuestro proyecto */
 body {
     font-family: "Bangers", cursive;
     background-color: #000;
@@ -25,7 +25,6 @@ body {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
-/* Estilos del menú principal */
 #main-menu {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
@@ -42,10 +41,10 @@ body {
 
 .menu-option {
     font-size: 2em;
-    padding: 10px 20px;
-    margin: 10px 0;
+    padding: 10px 20px; 
+    margin: 10px 0; 
     cursor: pointer;
-    position: relative;
+    position: relative;  
     overflow: hidden;
     transition: color 0.3s ease-in-out; /* Suaviza el cambio de color */
 }
@@ -100,7 +99,10 @@ button:hover {
 }
 
 
-/*buscaminas ------------------------------------------------------------------------*/
+/*#############################################################################################
+-------------------------------------JUEGO DE BUSCAMINAS --------------------------------------
+###############################################################################################*/
+
 #minesweeper {
     display: grid;
     grid-template-columns: repeat(10, 30px);
