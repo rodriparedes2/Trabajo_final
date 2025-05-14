@@ -1,20 +1,24 @@
-const cacheName = 'juego-pwa-v1';
-const staticAssets = [
-    'index.html',
-    'style.css',
-    'script.js',
-    'manifest.json',
-    'icon.png' // Asegúrate de incluir tu icono
+const CACHE_NAME = 'NeonGG-cache-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
-self.addEventListener('install', async () => {
-  const cache = await caches.open(cacheName);
-  await cache.addAll(staticAssets);
+// Instalar el service worker y cachear archivos
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
 });
 
-self.addEventListener('fetch', async (req) => {
-  const cache = await caches.open(cacheName);
-  const cachedResponse = await cache.match(req);
-
-  return cachedResponse || fetch(req);
+// Interceptar peticiones y servir desde caché
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
+  );
 });
