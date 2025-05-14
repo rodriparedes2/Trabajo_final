@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -7,14 +7,15 @@
     <title>Mi Juego PWA</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
 </head>
 
 <body>
     <div id="game-container">
         <div id="main-menu">
-            <h1>Neon Graffiti Game</h1>
-            <div class="menu-option" data-target="Graffiti-dodge">
-                <span>Graffiti-dodge</span>
+            <h1>Neon Graffiti Games</h1>
+            <div class="menu-option" data-target="buscaminas">
+                <span>Buscaminas</span>
             </div>
             <div class="menu-option" data-target="game-2">
                 <span>Juego 2</span>
@@ -27,32 +28,50 @@
             </div>
         </div>
 
-        <div id="graffiti-dodge" class="game-screen">
-            <canvas id="dodgeCanvas" width="300" height="500"></canvas>
-            <button onclick="showMenu()">Volver al Menú</button>
+        <div id="buscaminas" class="game-screen" style="display: none;">
+            <h1>Buscaminas</h1>
+            <div id="minesweeper-board"></div>
+            <p id="game-status"></p>
+            <p id="timer"> Tiempo: 0 segundos</p>
+            <div id="game-actions" style="margin-top: 20px;">
+                <button onclick="showMenu()">🏠 Volver al Menú</button>
+                <button onclick="toggleBestTimes()">🏆 Ver Mejores Tiempos</button>
+                <button onclick="initBuscaminas()">🔁 Reiniciar</button>
+            </div>
+
+            <div id="best-times-container" style="display: none; margin-top: 20px;">
+                <h2>Mejores Tiempos</h2>
+                <ol id="best-times-list"></ol>
+            </div>
         </div>
 
         <div id="game-2" class="game-screen" style="display: none;">
             <h1>Juego 2</h1>
-            <p>Este es el contenido del Juego 2.</p>
+            <p>Proximamente...</p>
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
 
         <div id="options" class="game-screen" style="display: none;">
             <h1>Opciones</h1>
-            <p>Aquí irían las opciones del juego.</p>
+            <p>Aun sin rellenar...</p>
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
 
         <div id="credits" class="game-screen" style="display: none;">
             <h1>Créditos</h1>
-            <p>Desarrollado por [Tu Nombre]</p>
+            <p>Desarrollado por PWA8G </p>
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
     </div>
 
     <script src="script.js"></script>
-    <script src="graffiti-dodge.js"></script>
+    <script>
+     if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✔ Service Worker registrado'))
+        .catch(error => console.error('❌ Error al registrar el Service Worker:', error));
+     }
+    </script>
 </body>
 
 </html>
