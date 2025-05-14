@@ -1,15 +1,21 @@
 {
-    "name": "Mi Juego PWA",
-    "short_name": "JuegoPWA",
-    "start_url": "index.html",
-    "display": "standalone",
-    "background_color": "#3367D6",
-    "theme_color": "#3367D6",
-    "icons": [
-        {
-            "src": "C:\\wamp\\www\\Poryecto\\icon.png",  
-            "sizes": "192x192",
-            "type": "image/png"
-        }
-    ]
+  "name": "Neon Graffiti Games",
+  "short_name": "NeonGG",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
