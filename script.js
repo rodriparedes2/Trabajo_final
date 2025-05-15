@@ -326,21 +326,29 @@ function startFlappybird() {
   const canvas = document.getElementById("flappy-canvas");
   const ctx = canvas.getContext("2d");
 
-  let gravity = 1;
-  let bird = { x: 50, y: 150, velocity: 0, width: 30, height: 30 };
+  const gravity = 0.6;
+  const jumpForce = -10;
+  const pipeSpeed = 2;
+  const pipeIntervalFrames = 120; // Cada 120 frames se genera una tubería
+  const gap = 140; // espacio entre tuberías
+  const birdSize = 30;
+
+  let bird = { x: 50, y: canvas.height / 2, velocity: 0, width: birdSize, height: birdSize };
   let pipes = [];
   let score = 0;
-  let gameInterval;
+  let bestFlappyScore = parseInt(localStorage.getItem('bestFlappyScore')) || 0;
+  let frameCount = 0;
   let gameOver = false;
+  let animationFrameId;
 
   function resetGame() {
-    bird.y = 150;
+    bird.y = canvas.height / 2;
     bird.velocity = 0;
     pipes = [];
     score = 0;
+    frameCount = 0;
     gameOver = false;
-    clearInterval(gameInterval);
-    gameInterval = setInterval(update, 20);
+    loop();
   }
 
   function drawBird() {
@@ -351,41 +359,51 @@ function startFlappybird() {
   function drawPipes() {
     ctx.fillStyle = "#0F0";
     pipes.forEach(pipe => {
+      // Tubo superior
       ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
+      // Tubo inferior
       ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
     });
   }
 
+  function drawScore() {
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Puntaje: ${score}`, 10, 25);
+    ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 50);
+  }
+
   function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (gameOver) return;
+
+    frameCount++;
+
+    // Aplica gravedad
     bird.velocity += gravity;
     bird.y += bird.velocity;
 
-    if (bird.y < 0 || bird.y + bird.height > canvas.height) {
-      endGame();
-      return;
+    // Generar tuberías a intervalos
+    if (frameCount % pipeIntervalFrames === 0) {
+      const minPipeHeight = 40;
+      const maxPipeHeight = canvas.height - gap - minPipeHeight;
+
+      const topPipeHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
+      const bottomPipeHeight = canvas.height - topPipeHeight - gap;
+
+      pipes.push({
+        x: canvas.width,
+        width: 40,
+        top: topPipeHeight,
+        bottom: bottomPipeHeight,
+        scored: false // para controlar que se sume puntaje solo 1 vez
+      });
     }
 
-      if (Math.random() < 0.02) {
-          const gap = 160;
-          const minPipeHeight = 50;
-          const maxPipeHeight = canvas.height - gap - minPipeHeight;
-
-          const topPipeHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
-          const bottomPipeHeight = canvas.height - topPipeHeight - gap;
-
-          pipes.push({
-              x: canvas.width,
-              width: 40,
-              top: topPipeHeight,
-              bottom: bottomPipeHeight
-          });
-      }
-
+    // Mover tuberías y detectar colisiones
     pipes.forEach(pipe => {
-      pipe.x -= 2;
+      pipe.x -= pipeSpeed;
 
-      // Colisión
+      // Colisión con tuberías
       if (
         bird.x < pipe.x + pipe.width &&
         bird.x + bird.width > pipe.x &&
@@ -394,35 +412,63 @@ function startFlappybird() {
         endGame();
       }
 
-      // Puntaje
-      if (pipe.x + pipe.width === bird.x) score++;
+      // Sumar puntaje cuando pasa una tubería (solo una vez)
+      if (!pipe.scored && pipe.x + pipe.width < bird.x) {
+        score++;
+        pipe.scored = true;
+      }
     });
 
+    // Quitar tuberías fuera de pantalla
     pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
 
+    // Colisión con el suelo o techo
+    if (bird.y < 0 || bird.y + bird.height > canvas.height) {
+      endGame();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBird();
     drawPipes();
-    ctx.fillStyle = "#FFF";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Puntaje: ${score}`, 10, 20);
+    drawScore();
+  }
+
+  function loop() {
+    update();
+    draw();
+    if (!gameOver) {
+      animationFrameId = requestAnimationFrame(loop);
+    }
   }
 
   function endGame() {
-    clearInterval(gameInterval);
     gameOver = true;
-    document.getElementById("flappy-status").textContent = `💥 Perdiste. Puntaje final: ${score}`;
+    cancelAnimationFrame(animationFrameId);
+
+    if (score > bestFlappyScore) {
+      bestFlappyScore = score;
+      localStorage.setItem('bestFlappyScore', bestFlappyScore);
+    }
+
+    // Mostrar mensaje de fin de juego
+    ctx.fillStyle = "white";
+    ctx.font = "24px Arial";
+    ctx.fillText(`💥 Perdiste. Puntaje final: ${score}`, 30, canvas.height / 2);
+    ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 30, canvas.height / 2 + 40);
   }
 
-  // Salto con clic o barra
+  // Controles para saltar
   document.addEventListener("keydown", e => {
     if (e.code === "Space" && !gameOver) {
-      bird.velocity = -10;
+      bird.velocity = jumpForce;
     }
   });
 
-  document.getElementById("flappy-canvas").addEventListener("click", () => {
+  canvas.addEventListener("click", () => {
     if (!gameOver) {
-      bird.velocity = -10;
+      bird.velocity = jumpForce;
     }
   });
 
