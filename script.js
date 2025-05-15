@@ -329,8 +329,8 @@ function startFlappybird() {
   const gravity = 0.6;
   const jumpForce = -10;
   const pipeSpeed = 2;
-  const pipeIntervalFrames = 120; // Cada 120 frames se genera una tubería
-  const gap = 140; // espacio entre tuberías
+  const pipeIntervalFrames = 120; 
+  const gap = 140;
   const birdSize = 30;
 
   let bird = { x: 50, y: canvas.height / 2, velocity: 0, width: birdSize, height: birdSize };
@@ -351,42 +351,47 @@ function startFlappybird() {
     loop();
   }
 
-  function drawBird() {
-    ctx.fillStyle = "#FF0";
-    ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-  }
+    function drawBird() {
+        ctx.fillStyle = "#00FFFF"; // celeste neón
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "#00FFFF";
+        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+        ctx.shadowBlur = 0;
+    }
 
   function drawPipes() {
-    ctx.fillStyle = "#0F0";
-    pipes.forEach(pipe => {
-      // Tubo superior
-      ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
-      // Tubo inferior
-      ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
-    });
+      ctx.fillStyle = "#00FFFF"; // celeste neón
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = "#00FFFF";
+
+      pipes.forEach(pipe => {
+          ctx.fillRect(pipe.x, 0, pipe.width, pipe.top); // tubo superior
+          ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom); // tubo inferior
+      });
+
+      ctx.shadowBlur = 0;
   }
 
   function drawScore() {
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText(`Puntaje: ${score}`, 10, 25);
-    ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 50);
+    ctx.fillStyle = "#00FFFF"; // cian neón
+    ctx.font = "22px 'Courier New'";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#00FFFF";
+    ctx.fillText(`Puntaje: ${score}`, 10, 30);
+    ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
+    ctx.shadowBlur = 0; // reset
   }
 
   function update() {
     if (gameOver) return;
 
     frameCount++;
-
-    // Aplica gravedad
     bird.velocity += gravity;
     bird.y += bird.velocity;
 
-    // Generar tuberías a intervalos
     if (frameCount % pipeIntervalFrames === 0) {
       const minPipeHeight = 40;
       const maxPipeHeight = canvas.height - gap - minPipeHeight;
-
       const topPipeHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
       const bottomPipeHeight = canvas.height - topPipeHeight - gap;
 
@@ -395,15 +400,13 @@ function startFlappybird() {
         width: 40,
         top: topPipeHeight,
         bottom: bottomPipeHeight,
-        scored: false // para controlar que se sume puntaje solo 1 vez
+        scored: false
       });
     }
 
-    // Mover tuberías y detectar colisiones
     pipes.forEach(pipe => {
       pipe.x -= pipeSpeed;
 
-      // Colisión con tuberías
       if (
         bird.x < pipe.x + pipe.width &&
         bird.x + bird.width > pipe.x &&
@@ -412,24 +415,23 @@ function startFlappybird() {
         endGame();
       }
 
-      // Sumar puntaje cuando pasa una tubería (solo una vez)
       if (!pipe.scored && pipe.x + pipe.width < bird.x) {
         score++;
         pipe.scored = true;
       }
     });
 
-    // Quitar tuberías fuera de pantalla
     pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
 
-    // Colisión con el suelo o techo
     if (bird.y < 0 || bird.y + bird.height > canvas.height) {
       endGame();
     }
   }
 
   function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#000000"; // fondo negro
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     drawBird();
     drawPipes();
     drawScore();
@@ -452,14 +454,15 @@ function startFlappybird() {
       localStorage.setItem('bestFlappyScore', bestFlappyScore);
     }
 
-    // Mostrar mensaje de fin de juego
-    ctx.fillStyle = "white";
-    ctx.font = "24px Arial";
+    ctx.fillStyle = "#FF00FF"; // fucsia
+    ctx.font = "22px 'Courier New'";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#FF00FF";
     ctx.fillText(`💥 Perdiste. Puntaje final: ${score}`, 30, canvas.height / 2);
     ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 30, canvas.height / 2 + 40);
+    ctx.shadowBlur = 0;
   }
 
-  // Controles para saltar
   document.addEventListener("keydown", e => {
     if (e.code === "Space" && !gameOver) {
       bird.velocity = jumpForce;
