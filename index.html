@@ -17,8 +17,8 @@
             <div class="menu-option" data-target="buscaminas">
                 <span>Buscaminas</span>
             </div>
-            <div class="menu-option" data-target="game-2">
-                <span>Juego 2</span>
+            <div class="menu-option" data-target="flappybird">
+                <span>Pájaro saltarín</span>
             </div>
             <div class="menu-option" data-target="options">
                 <span>Opciones</span>
@@ -45,9 +45,10 @@
             </div>
         </div>
 
-        <div id="game-2" class="game-screen" style="display: none;">
-            <h1>Juego 2</h1>
-            <p>Proximamente...</p>
+        <div id="flappybird" class="game-screen" style="display: none;">
+            <h1>Flappy Graffiti</h1>
+            <canvas id="flappy-canvas" width="320" height="480"></canvas>
+            <p id="flappy-status"></p>
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
 

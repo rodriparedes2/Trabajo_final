@@ -6,7 +6,9 @@ const urlsToCache = [
   './script.js',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './flappy-assets/bird.png',
+  './flappy-assets/bg.png',
 ];
 
 // Instalar el service worker y cachear archivos

@@ -30,6 +30,25 @@ menuOptions.forEach(option => {
 // Mostrar el menú principal al cargar la página
 showMenu();
 
+// Llamar al iniciar pantalla de un juego
+function showScreen(screenId) {
+    gameScreens.forEach(screen => {
+        screen.style.display = 'none';
+    });
+    const targetScreen = document.getElementById(screenId);
+    targetScreen.style.display = 'block';
+    mainMenu.style.display = 'none';
+
+    if (screenId === 'graffiti-dodge') {
+        startGame();
+    } else if (screenId === 'buscaminas') {
+        initBuscaminas();
+        displayBestTimes();
+    } else if (screenId === 'flappybird') {
+        startFlappybird();
+    }
+}
+
 /*#############################################################################################
 -------------------------------------JUEGO DE BUSCAMINAS --------------------------------------
 ###############################################################################################*/
@@ -108,22 +127,6 @@ function startBuscaminas(rows = 10, cols = 10, mines = 10) {
     }
 }
 
-// Llamar al iniciar pantalla de Buscaminas
-function showScreen(screenId) {
-    gameScreens.forEach(screen => {
-        screen.style.display = 'none';
-    });
-    const targetScreen = document.getElementById(screenId);
-    targetScreen.style.display = 'block';
-    mainMenu.style.display = 'none';
-
-    if (screenId === 'graffiti-dodge') {
-        startGame();
-    } else if (screenId === 'buscaminas') {
-        initBuscaminas();
-        displayBestTimes();
-    }
-}
 // VARIABLES:
 const rows = 8;
 const cols = 8;
@@ -313,4 +316,115 @@ function toggleBestTimes() {
     } else {
         container.style.display = 'none';
     }
+}
+
+/*#############################################################################################
+-------------------------------------JUEGO DEL PÁJARO SALTARÍN --------------------------------------
+###############################################################################################*/
+
+function startFlappybird() {
+  const canvas = document.getElementById("flappy-canvas");
+  const ctx = canvas.getContext("2d");
+
+  let gravity = 1;
+  let bird = { x: 50, y: 150, velocity: 0, width: 30, height: 30 };
+  let pipes = [];
+  let score = 0;
+  let gameInterval;
+  let gameOver = false;
+
+  function resetGame() {
+    bird.y = 150;
+    bird.velocity = 0;
+    pipes = [];
+    score = 0;
+    gameOver = false;
+    clearInterval(gameInterval);
+    gameInterval = setInterval(update, 20);
+  }
+
+  function drawBird() {
+    ctx.fillStyle = "#FF0";
+    ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+  }
+
+  function drawPipes() {
+    ctx.fillStyle = "#0F0";
+    pipes.forEach(pipe => {
+      ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
+      ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
+    });
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    bird.velocity += gravity;
+    bird.y += bird.velocity;
+
+    if (bird.y < 0 || bird.y + bird.height > canvas.height) {
+      endGame();
+      return;
+    }
+
+      if (Math.random() < 0.02) {
+          const gap = 160;
+          const minPipeHeight = 50;
+          const maxPipeHeight = canvas.height - gap - minPipeHeight;
+
+          const topPipeHeight = Math.floor(Math.random() * (maxPipeHeight - minPipeHeight + 1)) + minPipeHeight;
+          const bottomPipeHeight = canvas.height - topPipeHeight - gap;
+
+          pipes.push({
+              x: canvas.width,
+              width: 40,
+              top: topPipeHeight,
+              bottom: bottomPipeHeight
+          });
+      }
+
+    pipes.forEach(pipe => {
+      pipe.x -= 2;
+
+      // Colisión
+      if (
+        bird.x < pipe.x + pipe.width &&
+        bird.x + bird.width > pipe.x &&
+        (bird.y < pipe.top || bird.y + bird.height > canvas.height - pipe.bottom)
+      ) {
+        endGame();
+      }
+
+      // Puntaje
+      if (pipe.x + pipe.width === bird.x) score++;
+    });
+
+    pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
+
+    drawBird();
+    drawPipes();
+    ctx.fillStyle = "#FFF";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Puntaje: ${score}`, 10, 20);
+  }
+
+  function endGame() {
+    clearInterval(gameInterval);
+    gameOver = true;
+    document.getElementById("flappy-status").textContent = `💥 Perdiste. Puntaje final: ${score}`;
+  }
+
+  // Salto con clic o barra
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space" && !gameOver) {
+      bird.velocity = -10;
+    }
+  });
+
+  document.getElementById("flappy-canvas").addEventListener("click", () => {
+    if (!gameOver) {
+      bird.velocity = -10;
+    }
+  });
+
+  resetGame();
 }
