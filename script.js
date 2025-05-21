@@ -39,14 +39,14 @@ function showScreen(screenId) {
     targetScreen.style.display = 'block';
     mainMenu.style.display = 'none';
 
-    if (screenId === 'graffiti-dodge') {
-        startGame();
-    } else if (screenId === 'buscaminas') {
+    if (screenId === 'buscaminas') {
         initBuscaminas();
         displayBestTimes();
     } else if (screenId === 'flappybird') {
         startFlappybird();
-    }
+    } else if (screenId === 'Neon Dices'){
+        startNeonDices();
+    } 
 }
 
 /*#############################################################################################
@@ -477,3 +477,128 @@ function startFlappybird() {
 
   resetGame();
 }
+
+/*#############################################################################################
+-------------------------------------------Neon Dices--------------------------------------
+###############################################################################################*/
+
+
+let diceValues = [0, 0, 0, 0, 0];
+let frozen = [false, false, false, false, false];
+let rollCount = 0;
+let turnEnded = false;
+
+function rollDice() {
+    if (rollCount >= 3 || turnEnded) {
+        alert("¡Debes elegir una casilla antes de continuar!");
+        return;
+    }
+
+    const diceElements = [1, 2, 3, 4, 5].map(i => document.getElementById(`d${i}`));
+
+    diceElements.forEach((el, index) => {
+        if (frozen[index]) return;
+
+        let count = 0;
+        const interval = setInterval(() => {
+            const temp = Math.floor(Math.random() * 6) + 1;
+            el.textContent = temp;
+            count++;
+            if (count > 10) {
+                clearInterval(interval);
+                const finalValue = Math.floor(Math.random() * 6) + 1;
+                el.textContent = finalValue;
+                diceValues[index] = finalValue;
+            }
+        }, 50);
+    });
+
+    rollCount++;
+    if (rollCount === 3) {
+        alert("Último tiro. Debes elegir una casilla.");
+    }
+}
+
+function toggleFreeze(index) {
+    frozen[index] = !frozen[index];
+    const el = document.getElementById(`d${index + 1}`);
+    if (frozen[index]) {
+        el.style.backgroundColor = "#ccfaff"; // color hielo
+        el.style.color = "#000"; // texto negro
+        el.style.boxShadow = "0 0 15px #99eeff";
+    } else {
+        el.style.backgroundColor = "#111";
+        el.style.color = "#0ff";
+        el.style.boxShadow = "0 0 10px #0ff";
+    }
+}
+
+// Agregar listeners para congelar dados
+[0, 1, 2, 3, 4].forEach(i => {
+    document.getElementById(`d${i + 1}`).addEventListener("click", () => toggleFreeze(i));
+});
+
+// Permitir hacer clic en una casilla de puntuación
+document.querySelectorAll("#neon-dice-score td:nth-child(2)").forEach(td => {
+    td.addEventListener("click", () => {
+        if (turnEnded) return;
+
+        if (td.textContent !== "") {
+            alert("Esta casilla ya está usada.");
+            return;
+        }
+
+        const score = calculateScore(td.previousSibling.textContent.trim());
+        td.textContent = score;
+        turnEnded = true;
+        resetTurn();
+    });
+});
+
+function resetTurn() {
+    diceValues = [0, 0, 0, 0, 0];
+    frozen = [false, false, false, false, false];
+    rollCount = 0;
+    turnEnded = false;
+
+    [1, 2, 3, 4, 5].forEach(i => {
+        const el = document.getElementById(`d${i}`);
+        el.textContent = "?";
+        el.style.backgroundColor = "#111";
+        el.style.color = "#0ff";
+        el.style.boxShadow = "0 0 10px #0ff";
+    });
+}
+
+// Calcula la puntuación según la categoría elegida
+function calculateScore(category) {
+    const counts = [0, 0, 0, 0, 0, 0];
+    diceValues.forEach(val => counts[val - 1]++);
+
+    switch (category.toLowerCase()) {
+        case "unos": return counts[0] * 1;
+        case "doses": return counts[1] * 2;
+        case "treses": return counts[2] * 3;
+        case "cuatros": return counts[3] * 4;
+        case "cincos": return counts[4] * 5;
+        case "seis": return counts[5] * 6;
+        case "escalera": return isStraight() ? 25 : 0;
+        case "full": return counts.includes(3) && counts.includes(2) ? 30 : 0;
+        case "póker": return counts.includes(4) ? 40 : 0;
+        case "neon dice": return counts.includes(5) ? 50 : 0;
+        case "doble neon dice": return counts.includes(5) ? 100 : 0;
+        case "total": return diceValues.reduce((a, b) => a + b, 0);
+        default: return 0;
+    }
+}
+
+function isStraight() {
+    const sorted = [...new Set(diceValues)].sort((a, b) => a - b);
+    const straights = [
+        [1, 2, 3, 4, 5],
+        [2, 3, 4, 5, 6]
+    ];
+    return straights.some(seq => seq.every((val, i) => val === sorted[i]));
+}
+
+
