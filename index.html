@@ -13,13 +13,16 @@
 <body>
     <div id="game-container">
         <div id="main-menu">
-            <h1>Neon Graffiti Games</h1>
+            <h1>PWEANDING</h1>
             <div class="menu-option" data-target="buscaminas">
                 <span>Buscaminas</span>
             </div>
             <div class="menu-option" data-target="flappybird">
                 <span>Pájaro saltarín</span>
             </div>
+            <div class="menu-option" data-target="neon-dices">
+                <span>Neon Dices</span>
+            </div>    
             <div class="menu-option" data-target="options">
                 <span>Opciones</span>
             </div>
@@ -27,7 +30,7 @@
                 <span>Créditos</span>
             </div>
         </div>
-
+        
         <div id="buscaminas" class="game-screen" style="display: none;">
             <h1>Buscaminas</h1>
             <div id="minesweeper-board"></div>
@@ -52,6 +55,39 @@
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
 
+        <div id="neon-dices" class="game-screen" style="display: none;">
+            <h1>Neon Dices</h1>
+            <table id="neon-dice-score">
+                <tbody>
+                    <tr><td>Unos</td><td></td></tr>
+                    <tr><td>Doses</td><td></td></tr>
+                    <tr><td>Treses</td><td></td></tr>
+                    <tr><td>Cuatros</td><td></td></tr>
+                    <tr><td>Cincos</td><td></td></tr>
+                    <tr><td>Seis</td><td></td></tr>
+                    <tr><td>Escalera</td><td></td></tr>
+                    <tr><td>Full</td><td></td></tr>
+                    <tr><td>Póker</td><td></td></tr>
+                    <tr><td>Neon Dice</td><td></td></tr>
+                    <tr><td>Doble Neon Dice</td><td></td></tr>
+                    <tr><td>Total</td><td></td></tr>   
+                </tbody>
+            </table>
+       
+            <div id="dice-container">
+                <div class="dice" id="d1">?</div>
+                <div class="dice" id="d2">?</div>
+                <div class="dice" id="d3">?</div>
+                <div class="dice" id="d4">?</div>
+                <div class="dice" id="d5">?</div>
+            </div>
+
+            <button onclick="rollDice()">🎲 Tirar Dados</button>
+            <br><br>
+            <button onclick="showMenu()">🏠 Volver al Menú</button>
+            <button onclick="resetGame()">🔄 Reiniciar Juego</button>
+        </div>
+
         <div id="options" class="game-screen" style="display: none;">
             <h1>Opciones</h1>
             <p>Aun sin rellenar...</p>
@@ -64,6 +100,8 @@
             <button onclick="showMenu()">Volver al Menú</button>
         </div>
     </div>
+
+   
 
     <script src="script.js"></script>
     <script>
