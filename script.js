@@ -2,15 +2,6 @@ const mainMenu = document.getElementById('main-menu');
 const gameScreens = document.querySelectorAll('.game-screen');
 const menuOptions = document.querySelectorAll('.menu-option');
 
-// Función para mostrar una pantalla y ocultar las demás
-function showScreen(screenId) {
-    gameScreens.forEach(screen => {
-        screen.style.display = 'none';
-    });
-    const targetScreen = document.getElementById(screenId);
-    targetScreen.style.display = 'block';
-}
-
 // Función para mostrar el menú principal
 function showMenu() {
     gameScreens.forEach(screen => {
@@ -140,8 +131,10 @@ let seconds = 0;
 // variables para calcular los mejores tiempos
 const MAX_BEST_TIMES = 5;
 let bestTimes = JSON.parse(localStorage.getItem('bestTimes')) || []; // Cargar desde localStorage
+let username = "Anónimo";
 
 function initBuscaminas() {
+    document.getElementById("best-time-input-container").style.display = "none";
     document.getElementById("best-times-container").style.display = "none";
     const boardElement = document.getElementById("minesweeper-board");
     boardElement.innerHTML = "";
@@ -229,8 +222,7 @@ function revealCell(cell) {
         document.getElementById("game-status").textContent = "🎉 ¡Ganaste!";
         gameOver = true;
         stopTimer();
-        updateBestTimes(seconds);
-        displayBestTimes(seconds);
+        handleNewBestTime(seconds);
     }
 }
 
@@ -279,33 +271,69 @@ function updateTimerDisplay() {
 }
 
  
-function updateBestTimes(time) {
-    bestTimes.push(time);
-    bestTimes.sort((a, b) => a - b); // Ordenar de menor a mayor
+// Función para manejar un nuevo récord de Buscaminas
+function handleNewBestTime(newTime) {
+    // Muestra el input para el nombre
+    const bestTimeInputContainer = document.getElementById('best-time-input-container');
+    bestTimeInputContainer.style.display = 'block';
+
+    const bestTimeNameInput = document.getElementById('best-time-name-input');
+    bestTimeNameInput.value = localStorage.getItem('lastUsername') || "Anónimo"; // Sugiere el último nombre usado
+    bestTimeNameInput.focus();
+
+    // Guardar el tiempo y el nombre cuando el usuario haga clic en "Guardar Récord"
+    const saveRecordBtn = document.getElementById('save-minesweeper-record-btn');
+    saveRecordBtn.onclick = () => {
+        const enteredName = bestTimeNameInput.value.trim();
+        username = enteredName || "Anónimo"; // Usa el nombre ingresado o "Anónimo"
+        localStorage.setItem('lastUsername', username); // Guarda el último nombre para futuras sugerencias
+
+        // Actualiza los mejores tiempos con el nombre
+        updateBestTimesInternal(newTime, username);
+
+        bestTimeInputContainer.style.display = 'none'; // Oculta el input
+        displayBestTimes(); // Actualiza la lista de récords para mostrar el nuevo
+    };
+}
+
+// Función interna para actualizar los mejores tiempos
+function updateBestTimesInternal(newTime, user) {
+    let bestTimes = JSON.parse(localStorage.getItem('minesweeperBestTimes')) || []; 
+    bestTimes.push({ time: newTime, user: user }); // Guarda el tiempo y el usuario
+    bestTimes.sort((a, b) => a.time - b.time); // Ordena por tiempo
+
     if (bestTimes.length > MAX_BEST_TIMES) {
-        bestTimes.pop(); // Eliminar el peor tiempo si hay más de 5
+        bestTimes = bestTimes.slice(0, MAX_BEST_TIMES);
     }
-    localStorage.setItem('bestTimes', JSON.stringify(bestTimes)); // Guardar en localStorage
-    displayBestTimes();
+    localStorage.setItem('minesweeperBestTimes', JSON.stringify(bestTimes)); // Guarda la lista actualizada
 }
  
-function displayBestTimes(newTime = null) {
-    const list = document.getElementById('best-times-list');
-    const container = document.getElementById('best-times-container');
-    list.innerHTML = '';
-    container.style.display = 'block'; // Mostrar solo cuando se llama
+function displayBestTimes() {
+    const bestTimes = JSON.parse(localStorage.getItem('minesweeperBestTimes')) || []; // Carga desde la clave específica
+    const bestTimesList = document.getElementById('minesweeper-best-times-list');
+    bestTimesList.innerHTML = ''; // Limpiar la lista
 
-    bestTimes.forEach((time, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${time} segundos`;
+    if (bestTimes.length === 0) {
+        bestTimesList.innerHTML = '<li>No hay récords aún.</li>';
+    } else {
+          bestTimes.forEach((record, index) => {
+                const listItem = document.createElement('li');
 
-        // Marcar como récord si es el nuevo y el mejor
-        if (newTime !== null && time === newTime && index === 0) {
-            li.classList.add('record');
-        }
+                const rankAndName = document.createElement('span');
+                rankAndName.textContent = `${index + 1}. ${record.user}`;
 
-        list.appendChild(li);
-    });
+                const timeValue = document.createElement('span');
+                timeValue.textContent = `${record.time} segundos`;
+
+                listItem.appendChild(rankAndName);
+                listItem.appendChild(timeValue); // Asegura que haya dos elementos hijos en el <li>
+
+                if (index === 0) {
+                    listItem.classList.add('record');
+                }
+                bestTimesList.appendChild(listItem);
+            });
+    }
 }
 
 function toggleBestTimes() {
@@ -319,7 +347,7 @@ function toggleBestTimes() {
 }
 
 /*#############################################################################################
--------------------------------------JUEGO DEL PÁJARO SALTARÍN --------------------------------------
+-------------------------------------FLAPPY GRAFFITI--------------------------------------
 ###############################################################################################*/
 
 function startFlappybird() {
@@ -600,5 +628,3 @@ function isStraight() {
     ];
     return straights.some(seq => seq.every((val, i) => val === sorted[i]));
 }
-
-
