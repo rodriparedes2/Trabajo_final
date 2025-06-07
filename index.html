@@ -18,7 +18,7 @@
                 <span>Buscaminas</span>
             </div>
             <div class="menu-option" data-target="flappybird">
-                <span>Pájaro saltarín</span>
+                <span>Flappy Graffiti</span>
             </div>
             <div class="menu-option" data-target="neon-dices">
                 <span>Neon Dices</span>
@@ -35,16 +35,20 @@
             <h1>Buscaminas</h1>
             <div id="minesweeper-board"></div>
             <p id="game-status"></p>
-            <p id="timer"> Tiempo: 0 segundos</p>
-            <div id="game-actions" style="margin-top: 20px;">
-                <button onclick="showMenu()">🏠 Volver al Menú</button>
-                <button onclick="toggleBestTimes()">🏆 Ver Mejores Tiempos</button>
-                <button onclick="initBuscaminas()">🔁 Reiniciar</button>
+            <p id="timer">Tiempo: 0 segundos</p>
+
+            <div id="best-time-input-container" style="display: none; margin-top: 20px;">
+                <p style="color: #ffffff; text-shadow: 0 0 5px #ffea00;">¡Nuevo récord! Ingresa tu nombre:</p>
+                <input type="text" id="best-time-name-input" placeholder="Tu nombre" maxlength="15" style="padding: 8px; border-radius: 5px; border: 1px solid #FFD700; background-color: rgba(0,0,0,0.5); color: #fff;">
+                <button id="save-minesweeper-record-btn" style="margin-left: 10px;">Guardar Récord</button>
             </div>
 
-            <div id="best-times-container" style="display: none; margin-top: 20px;">
+            <button onclick="showMenu()">🏠 Volver al Menú</button>
+            <button onclick="toggleBestTimes()">🏆 Ver Mejores Tiempos</button> <button onclick="initBuscaminas()">🔁 Reiniciar</button>
+
+            <div id="best-times-container" style="display: none;">
                 <h2>Mejores Tiempos</h2>
-                <ol id="best-times-list"></ol>
+                <ul id="minesweeper-best-times-list"> </ul>
             </div>
         </div>
 
