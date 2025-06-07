@@ -103,86 +103,124 @@ button:hover {
 -------------------------------------JUEGO DE BUSCAMINAS --------------------------------------
 ###############################################################################################*/
 
-#minesweeper {
-    display: grid;
-    grid-template-columns: repeat(10, 30px);
-    gap: 2px;
-    justify-content: center;
-    margin-top: 20px;
+#minesweeper-board {
+    margin: 20px auto; /* Centrado horizontal */
+    max-width: fit-content; /* El ancho del tablero se ajusta a su contenido */
+    /* Mantiene los bordes y sombras si los tenías antes */
+    border: 2px solid #00eeff; 
+    box-shadow: 0 0 15px rgba(254, 255, 254, 0.7); 
 }
 
-.cell {
+.cell { /* Reglas consolidadas para las celdas  */
     width: 30px;
     height: 30px;
     background-color: #111;
-    color: #0ff;
+    color: #0ff; /* Color de los números */
+    font-size: 1.2em; 
     text-align: center;
-    vertical-align: middle;
-    line-height: 30px;
+    line-height: 30px; 
     font-weight: bold;
     border: 1px solid #0ff;
     cursor: pointer;
+    user-select: none; 
+    transition: background-color 0.2s;
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.cell:hover:not(.revealed) {
+    background-color: #222; 
 }
 
 .cell.revealed {
     background-color: #333;
     cursor: default;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* sombra interna para profundidad */
 }
 
-.cell.mine {
+.cell.mine { 
     background-color: red;
+    color: white; /* Aseguro que la mina sea visible */
 }
 
-#minesweeper-board {
-    margin: 20px auto;
-    max-width: fit-content;
-}
 
-.cell {
-    width: 30px;
-    height: 30px;
-    background-color: #111;
-    color: #0ff;
-    font-size: 18px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 30px;
-    border: 1px solid #0ff;
-    user-select: none;
-    cursor: pointer;
-}
-
-.cell.revealed {
-    background-color: #333;
-    cursor: default;
-}
-
+/* Estilos para el estado del juego y el temporizador */
 #game-status {
+    font-size: 1.8em;
+    margin-top: 15px;
+    color: #ffffff;
+    text-shadow: 0 0 10px #00e1ff;
+}
+
+#timer {
+    font-size: 1.4em;
     margin-top: 10px;
-    font-size: 1.2em;
+    color: #ffffff; 
+    text-shadow: 0 0 8px #757575;
 }
 
-#best-times {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #0ff;
-    border-radius: 5px;
+/* Estilos para la lista de récords (Contenedor general) */
+#best-times-container { 
+    position: absolute; 
+    top: 50%; /* centrado */
+    left: 50%; 
+    transform: translate(-50%, -50%); /* Ajusta para centrarlo perfectamente */
+    z-index: 100; /* Asegura que esté por encima de otros elementos */
+
+    margin-top: 0;
+    border: 1px solid #FFD700;
+    padding: 20px; 
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro con 90% opacidad (ligeramente transparente) */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    width: 80%; /* Ocupa el 80% del ancho de la pantalla */
+    max-width: 400px; /* Un ancho máximo para que no sea demasiado grande en pantallas amplias */
+    text-align: left; /* Alinea el texto a la izquierda dentro del contenedor */
 }
 
-#best-times h2 {
-    font-size: 1.5em;
+#best-times-container h2 { 
+    color: #ffffff; 
+    text-shadow: 0 0 8px #FFD700;
     margin-bottom: 10px;
+    text-align: center;
 }
 
-#best-times ol {
-    list-style-type: decimal;
-    padding-left: 20px;
+/* Estilos para la lista UL de mejores tiempos de Buscaminas */
+#minesweeper-best-times-list { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
 }
 
-#best-times li {
-    margin: 5px 0;
+#minesweeper-best-times-list li {
+    display: flex; /* Convierte los ítems en contenedores flex */
+    justify-content: space-between; /* Empuja el primer elemento a la izquierda y el último a la derecha */
+    align-items: baseline; /* Alinea los elementos a la línea base del texto */
+    padding: 5px 10px; /* Padding horizontal para separar de los bordes del contenedor */
+    border-bottom: 1px dotted #FFD700; /* Línea divisoria punteada */
+    color: #fff; /* Color de texto por defecto */
+    font-size: 1.1em;
 }
 
+#minesweeper-best-times-list li:last-child {
+    border-bottom: none; /* Eliminar la línea del último elemento */
+}
+
+li.record {
+    color: #ff0; 
+    font-weight: bold;
+    animation: glow 1s ease-in-out infinite alternate; /* Animación de brillo */
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #ff0, 0 0 10px #ff0;
+    }
+    to {
+        text-shadow: 0 0 20px #ff0, 0 0 30px #ff0;
+    }
+}
+
+/* Estilos para el botón de reintentar */
 #retry-button {
     background-color: #000;
     color: #0ff;
