@@ -28,15 +28,17 @@ body {
 #main-menu {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
-    border: 2px solid #fff;
+    border: 2px solid #b700ff; /* Borde fucsia para el menú */
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
+    width: 98%; /* Ajustado para que el menú ocupe el 98% del ancho de la pantalla */
+    margin: 0 auto; /* Centra el menú horizontalmente, distribuyendo el espacio restante a los lados */
 }
 
 #main-menu h1 {
     font-size: 3em;
     margin-bottom: 30px; /* Incrementa el margen inferior */
-    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+    text-shadow: 0 0 10px rgb(225, 0, 255), 0 0 20px rgb(174, 0, 255), 0 0 30px rgb(212, 0, 255);
 }
 
 .menu-option {
@@ -70,8 +72,8 @@ body {
 }
 
 .menu-option:hover {
-    color: #f0f; /* Color morado al pasar el mouse */
-    text-shadow: 0 0 10px #f0f, 0 0 20px #f0f; /* Neón morado */
+    color: rgb(255, 0, 251); /* Color morado al pasar el mouse */
+    text-shadow: 0 0 10px rgb(140, 0, 255), 0 0 20px rgb(140, 0, 255); /* Neón morado */
 }
 
 .menu-option:hover::before {
@@ -79,7 +81,7 @@ body {
     background: linear-gradient(90deg, #f0f, #f0f); /* Morado al hacer hover */
 }
 
-/* Estilos para el botón de "Volver al Menú" */
+/* Estilos para los botones" */
 button {
     background-color: #000;
     color: #0ff;
@@ -102,6 +104,15 @@ button:hover {
 /*#############################################################################################
 -------------------------------------JUEGO DE BUSCAMINAS --------------------------------------
 ###############################################################################################*/
+
+#buscaminas {
+    border: 2px solid #00FFFF; /* Borde cian para Buscaminas */
+}
+
+#buscaminas h1 {
+    color: #FFFFFF; /* Texto blanco */
+    text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF; /* Sombra cian */
+}
 
 #minesweeper-board {
     margin: 20px auto; /* Centrado horizontal */
