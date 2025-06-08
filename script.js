@@ -400,15 +400,29 @@ function startFlappybird() {
       ctx.shadowBlur = 0;
   }
 
-  function drawScore() {
-    ctx.fillStyle = "#00FFFF"; // cian neón
-    ctx.font = "22px 'Courier New'";
+function drawScore() {
+    // Guarda el estado actual del canvas
+    ctx.save();
+
+    ctx.font = "25px 'Courier New'";
+
+    ctx.strokeStyle = "black"; // Color del contorno: negro
+    ctx.lineWidth = 2; 
+
+    // Configuración para el texto principal
+    ctx.fillStyle = "#FFFF00"; 
     ctx.shadowBlur = 10;
-    ctx.shadowColor = "#00FFFF";
+    ctx.shadowColor = "black"; 
+
+    ctx.strokeText(`Puntaje: ${score}`, 10, 30);
     ctx.fillText(`Puntaje: ${score}`, 10, 30);
+    ctx.strokeText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
     ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
-    ctx.shadowBlur = 0; // reset
-  }
+
+    // Restaura el estado del canvas para que otros dibujos no se vean afectados
+    ctx.shadowBlur = 0; // Resetea la sombra para el resto de dibujos
+    ctx.restore();
+}
 
   function update() {
     if (gameOver) return;
