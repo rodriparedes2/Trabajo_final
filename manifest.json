@@ -6,6 +6,7 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
+  "description": "Una colección de juegos arcade de inspiración retro con una estética de graffiti neón.",
   "icons": [
     {
       "src": "icon-192.png", 
