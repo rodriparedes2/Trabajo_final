@@ -1,7 +1,16 @@
 /* Estilo base inicial para nuestro proyecto */
 body {
     font-family: "Bangers", cursive;
-    background-color: #000;
+    /* Nuevas propiedades para el fondo de toda la página */
+    background-image: url('images/f2.jpg');
+    background-size: cover; /* Cubre todo el viewport */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #000000; /* Color de respaldo si la imagen no carga */
+    filter: brightness(1.2) contrast(1.1); /* Ejemplo de filtro para hacerlo más vibrante */
+    /* Ejemplo de modo de mezcla si tienes un background-color para mezclar */
+    
     color: #fff;
     margin: 0;
     padding: 0;
@@ -9,7 +18,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* Mantiene la barra de desplazamiento oculta si no es necesaria */
 }
 
 #game-container {
@@ -28,33 +37,37 @@ body {
 #main-menu {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
-    border: 2px solid #b700ff; /* Borde fucsia para el menú */
+    border: 2px solid #b700ff; 
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(128, 0, 255, 0.5);
-    width: 98%; /* Ajustado para que el menú ocupe el 98% del ancho de la pantalla */
-    margin: 0 auto; /* Centra el menú horizontalmente, distribuyendo el espacio restante a los lados */
+    width: 98%;
+    margin: 0 auto;
 }
 
 #main-menu h1 {
     font-size: 3em;
-    margin-bottom: 30px; /* Incrementa el margen inferior */
+    margin-bottom: 30px; 
     text-shadow: 0 0 10px rgb(225, 0, 255), 0 0 20px rgb(174, 0, 255), 0 0 30px rgb(212, 0, 255);
 }
 
 .menu-option {
     font-size: 2em;
-    padding: 10px 20px; 
-    margin: 10px 0; 
+    padding: 10px 20px;
+    margin: 10px 0;
     cursor: pointer;
-    position: relative;  
+    position: relative;
     overflow: hidden;
-    transition: color 0.3s ease-in-out; /* Suaviza el cambio de color */
+    transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out; 
+    color: #fff; 
+    text-shadow: none; 
 }
+
 
 .menu-option span {
     display: block;
     position: relative;
-    z-index: 2;
+    z-index: 2; 
+    transition: transform 0.5s ease-in-out;
 }
 
 .menu-option::before {
@@ -64,22 +77,25 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, transparent); /* Inicialmente transparente */
-    opacity: 0;
-    transition: opacity 0.5s;
+    background: rgba(255, 0, 255, 0.2); /* Fondo semi-transparente morado para el efecto inicial */
+    opacity: 0; /* Inicia invisible */
+    transition: opacity 0.3s ease-in-out; /* Transición para la opacidad */
     z-index: 1;
-    mix-blend-mode: color-dodge;
+    /* mix-blend-mode: overlay; */ /* Puedes probar con overlay si te gusta un efecto sutil, pero si causa problemas, quítalo */
+    transform: scaleX(0); /* Empieza sin ancho */
+    transform-origin: left;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-in-out;
 }
 
 .menu-option:hover {
-    color: rgb(255, 0, 251); /* Color morado al pasar el mouse */
-    text-shadow: 0 0 10px rgb(140, 0, 255), 0 0 20px rgb(140, 0, 255); /* Neón morado */
+    color: #ffcbfa; /* Mantén el texto blanco o cambia a un color específico para el hover */
+    text-shadow: 0 0 10px rgb(255, 0, 251), 0 0 20px rgb(255, 0, 251); /* Neón morado intenso */
 }
 
-.menu-option:hover::before {
-    opacity: 1;
-    background: linear-gradient(90deg, #f0f, #f0f); /* Morado al hacer hover */
+.menu-option:hover span {
+    transform: scale(1.05); 
 }
+
 
 /* Estilos para los botones" */
 button {
@@ -267,8 +283,31 @@ li.record {
 }
 
 /*#############################################################################################
+-------------------------------------FLAPPY GRAFFITI--------------------------------------
+###############################################################################################*/
+
+#flappybird {
+    border: 2px solid #00FFFF; /* Borde cian para Flappy Graffiti */
+}
+
+#flappybird h1 {
+    color: #FFFFFF; /* Texto blanco */
+    text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF; /* Sombra cian */
+}
+
+/*#############################################################################################
 -------------------------------------Neon Dices--------------------------------------
 ###############################################################################################*/
+
+#neon-dices {
+    border: 2px solid #00FFFF; /* Borde cian para Neon Dices */
+}
+
+#neon-dices h1 {
+    color: #FFFFFF; /* Texto blanco */
+    text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF; /* Sombra cian */
+}
+
 #neon-dice-score {
     margin: 20px auto;
     border-collapse: collapse;
@@ -310,3 +349,55 @@ li.record {
     background-color: rgba(255, 255, 255, 0.1);
     cursor: pointer;
 }
+
+/* Estilos para la lista de récords de Neon Dices */
+#neon-scores-container { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    margin-top: 0;
+    border: 1px solid #FFD700;
+    padding: 20px; 
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    width: 80%;
+    max-width: 400px;
+    text-align: left;
+}
+
+#neon-scores-container h2 { 
+    color: #ffffff; 
+    text-shadow: 0 0 8px #FFD700;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#neon-scores-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#neon-scores-list li {
+    padding: 8px 15px;
+    border-bottom: 1px dotted #FFD700;
+    color: #fff;
+    font-size: 1.2em;
+    font-family: monospace;
+    white-space: pre; /* respeta los espacios agregados con padEnd */
+}
+
+#neon-scores-list li:last-child {
+    border-bottom: none;
+}
+
+#neon-scores-list li.record {
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
