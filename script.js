@@ -357,7 +357,7 @@ function startFlappybird() {
   const gravity = 0.6;
   const jumpForce = -10;
   const pipeSpeed = 2;
-  const pipeIntervalFrames = 120; 
+  const pipeIntervalFrames = 120;
   const gap = 140;
   const birdSize = 30;
 
@@ -368,6 +368,7 @@ function startFlappybird() {
   let frameCount = 0;
   let gameOver = false;
   let animationFrameId;
+  let gameStarted = false; // <-- Variable de estado para controlar el inicio
 
   function resetGame() {
     bird.y = canvas.height / 2;
@@ -376,16 +377,22 @@ function startFlappybird() {
     score = 0;
     frameCount = 0;
     gameOver = false;
-    loop();
+    gameStarted = false; // Reiniciar el estado de inicio del juego
+    // Asegurarse de que cualquier animación previa esté cancelada al resetear
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null; // Limpiar la ID de la animación
+    }
+    draw(); // Dibuja el estado inicial (pájaro quieto)
   }
 
-    function drawBird() {
-        ctx.fillStyle = "#00FFFF"; // celeste neón
-        ctx.shadowBlur = 0;
-        ctx.shadowColor = "#00FFFF";
-        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-        ctx.shadowBlur = 0;
-    }
+  function drawBird() {
+    ctx.fillStyle = "#00FFFF"; // celeste neón
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "#00FFFF";
+    ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+    ctx.shadowBlur = 0;
+  }
 
   function drawPipes() {
       ctx.fillStyle = "#00FFFF"; // celeste neón
@@ -400,37 +407,30 @@ function startFlappybird() {
       ctx.shadowBlur = 0;
   }
 
-function drawScore() {
-    // Guarda el estado actual del canvas
-    ctx.save();
-
-    ctx.font = "25px 'Courier New'";
-
-    ctx.strokeStyle = "black"; // Color del contorno: negro
-    ctx.lineWidth = 2; 
-
-    // Configuración para el texto principal
-    ctx.fillStyle = "#FFFF00"; 
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "black"; 
-
-    ctx.strokeText(`Puntaje: ${score}`, 10, 30);
-    ctx.fillText(`Puntaje: ${score}`, 10, 30);
-    ctx.strokeText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
-    ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
-
-    // Restaura el estado del canvas para que otros dibujos no se vean afectados
-    ctx.shadowBlur = 0; // Resetea la sombra para el resto de dibujos
-    ctx.restore();
-}
+  function drawScore() {
+      ctx.save();
+      ctx.font = "25px 'Courier New'";
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 2;
+      ctx.fillStyle = "#FFFF00";
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "black";
+      ctx.strokeText(`Puntaje: ${score}`, 10, 30);
+      ctx.fillText(`Puntaje: ${score}`, 10, 30);
+      ctx.strokeText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
+      ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 10, 60);
+      ctx.shadowBlur = 0;
+      ctx.restore();
+  }
 
   function update() {
-    if (gameOver) return;
+    if (gameOver || !gameStarted) return; // Solo actualiza si el juego ha comenzado y no ha terminado
 
     frameCount++;
     bird.velocity += gravity;
     bird.y += bird.velocity;
 
+    // Generación y movimiento de tuberías
     if (frameCount % pipeIntervalFrames === 0) {
       const minPipeHeight = 40;
       const maxPipeHeight = canvas.height - gap - minPipeHeight;
@@ -449,6 +449,7 @@ function drawScore() {
     pipes.forEach(pipe => {
       pipe.x -= pipeSpeed;
 
+      // Detección de colisiones con tuberías
       if (
         bird.x < pipe.x + pipe.width &&
         bird.x + bird.width > pipe.x &&
@@ -457,14 +458,17 @@ function drawScore() {
         endGame();
       }
 
+      // Puntuación
       if (!pipe.scored && pipe.x + pipe.width < bird.x) {
         score++;
         pipe.scored = true;
       }
     });
 
+    // Eliminar tuberías fuera de la pantalla
     pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
 
+    // Detección de colisiones con el techo o el suelo
     if (bird.y < 0 || bird.y + bird.height > canvas.height) {
       endGame();
     }
@@ -489,7 +493,8 @@ function drawScore() {
 
   function endGame() {
     gameOver = true;
-    cancelAnimationFrame(animationFrameId);
+    cancelAnimationFrame(animationFrameId); // Detiene el bucle de animación
+    animationFrameId = null; // Asegura que no haya ID de animación activa
 
     if (score > bestFlappyScore) {
       bestFlappyScore = score;
@@ -503,21 +508,39 @@ function drawScore() {
     ctx.fillText(`💥 Perdiste. Puntaje final: ${score}`, 30, canvas.height / 2);
     ctx.fillText(`🏆 Récord: ${bestFlappyScore}`, 30, canvas.height / 2 + 40);
     ctx.shadowBlur = 0;
+    // ¡IMPORTANTE! Eliminado: resetGame();
+    // El juego no se reinicia automáticamente aquí.
   }
 
   document.addEventListener("keydown", e => {
-    if (e.code === "Space" && !gameOver) {
-      bird.velocity = jumpForce;
+    if (e.code === "Space") {
+      if (!gameStarted) {
+        gameStarted = true;
+        loop(); // Inicia el bucle de juego
+        bird.velocity = jumpForce; // Y el primer salto
+      } else if (!gameOver) {
+        bird.velocity = jumpForce;
+      }
     }
   });
 
   canvas.addEventListener("click", () => {
-    if (!gameOver) {
+    if (!gameStarted) {
+      gameStarted = true;
+      loop(); // Inicia el bucle de juego
+      bird.velocity = jumpForce; // Y el primer salto
+    } else if (!gameOver) {
       bird.velocity = jumpForce;
     }
+    // ¡IMPORTANTE! Eliminado: else { resetGame(); }
+    // El juego no se reinicia con un clic después de perder.
   });
 
-  resetGame();
+  resetGame(); // Llama a resetGame una vez para dibujar el pájaro inicial quieto
+}
+
+function restartFlappybird() {
+    startFlappybird();
 }
 
 /*#############################################################################################
@@ -593,6 +616,18 @@ document.querySelectorAll("#neon-dice-score td:nth-child(2)").forEach(td => {
         const score = calculateScore(td.previousSibling.textContent.trim());
         td.textContent = score;
         turnEnded = true;
+
+        // Si el juego está completo, guardar récord
+        if (isNeonDicesGameComplete()) {
+            const totalScore = calculateTotalNeonScore();
+            const name = prompt("🎉 ¡Juego completo! Ingresa tu nombre:");
+            if (name) {
+                saveNeonScore(totalScore, name.trim());
+                alert(`Tu puntuación: ${totalScore}`);
+                showNeonScores();
+            }
+        }
+
         resetTurn();
     });
 });
@@ -641,4 +676,98 @@ function isStraight() {
         [2, 3, 4, 5, 6]
     ];
     return straights.some(seq => seq.every((val, i) => val === sorted[i]));
+}
+
+function isNeonDicesGameComplete() {
+    const cells = document.querySelectorAll("#neon-dice-score td:nth-child(2)");
+    let filled = 0;
+
+    cells.forEach(td => {
+        if (td.previousSibling.textContent.trim() !== "Total" && td.textContent !== "") {
+            filled++;
+        }
+    });
+
+    return filled === 11; // Las 11 categorías que no son "Total"
+}
+
+function calculateTotalNeonScore() {
+    let total = 0;
+    document.querySelectorAll("#neon-dice-score td:nth-child(2)").forEach(td => {
+        const val = parseInt(td.textContent);
+        if (!isNaN(val)) {
+            total += val;
+        }
+    });
+    return total;
+}
+
+const MAX_NEON_SCORES = 5;
+
+function saveNeonScore(score, user) {
+    let scores = JSON.parse(localStorage.getItem("neonBestScores")) || [];
+    scores.push({ user, score });
+    scores.sort((a, b) => b.score - a.score); // Mayor puntuación primero
+
+    if (scores.length > MAX_NEON_SCORES) {
+        scores = scores.slice(0, MAX_NEON_SCORES);
+    }
+
+    localStorage.setItem("neonBestScores", JSON.stringify(scores));
+}
+
+function toggleNeonScores() {
+    const container = document.getElementById("neon-scores-container");
+    const list = document.getElementById("neon-scores-list");
+
+    if (container.style.display === "none" || container.style.display === "") {
+        // Mostrar y cargar datos
+        const scores = JSON.parse(localStorage.getItem("neonBestScores")) || [];
+
+        list.innerHTML = "";
+        if (scores.length === 0) {
+            list.innerHTML = "<li>No hay récords aún.</li>";
+        } else {
+            scores.forEach((entry, i) => {
+                const li = document.createElement("li");
+                li.textContent = `${i + 1}. ${entry.user.padEnd(25, ' ')}${entry.score.toString().padStart(6, ' ')} pts`;
+    
+                // Resaltar el mejor puntaje
+                if (i === 0) {
+                li.classList.add("record");
+                }
+
+                list.appendChild(li);
+            });
+        }
+
+        container.style.display = "block";
+    } else {
+        // Ocultar si ya estaba visible
+        container.style.display = "none";
+    }
+}
+
+function resetGame() {
+    diceValues = [0, 0, 0, 0, 0];
+    frozen = [false, false, false, false, false];
+    rollCount = 0;
+    turnEnded = false;
+
+    // Reiniciar visual de los dados
+    [1, 2, 3, 4, 5].forEach(i => {
+        const el = document.getElementById(`d${i}`);
+        el.textContent = "?";
+        el.style.backgroundColor = "#111";
+        el.style.color = "#0ff";
+        el.style.boxShadow = "0 0 10px #0ff";
+    });
+
+    // Limpiar todas las celdas de puntuación
+    document.querySelectorAll("#neon-dice-score td:nth-child(2)").forEach(td => {
+        td.textContent = "";
+    });
+
+    // Ocultar el panel de récords si está visible
+    document.getElementById("neon-scores-container").style.display = "none";
 }
