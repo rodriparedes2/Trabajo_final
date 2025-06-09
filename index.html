@@ -57,6 +57,7 @@
             <canvas id="flappy-canvas" width="320" height="480"></canvas>
             <p id="flappy-status"></p>
             <button onclick="showMenu()">Volver al Menú</button>
+            <button onclick="restartFlappybird()">🔄 Reiniciar Juego</button>
         </div>
 
         <div id="neon-dices" class="game-screen" style="display: none;">
@@ -90,6 +91,11 @@
             <br><br>
             <button onclick="showMenu()">🏠 Volver al Menú</button>
             <button onclick="resetGame()">🔄 Reiniciar Juego</button>
+            <button onclick="toggleNeonScores()">🏆 Ver Mejores Puntajes</button>
+            <div id="neon-scores-container" style="display: none; margin-top: 20px;">
+                <h2>🏆 Mejores Puntuaciones</h2>
+                <ul id="neon-scores-list"></ul>
+            </div>
         </div>
 
         <div id="options" class="game-screen" style="display: none;">
