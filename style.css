@@ -2,7 +2,7 @@
 body {
     font-family: "Bangers", cursive;
     /* Nuevas propiedades para el fondo de toda la página */
-    background-image: url('images/f2.jpg');
+    background-image: url('f2.jpg');
     background-size: cover; /* Cubre todo el viewport */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat;
