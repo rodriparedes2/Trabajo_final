@@ -401,3 +401,42 @@ li.record {
     animation: glow 1s ease-in-out infinite alternate;
 }
 
+/*#############################################################################################
+-------------------------------------PIEDRA PAPEL TIJERA--------------------------------------
+###############################################################################################*/
+
+.ppt-options {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1.5em;
+}
+
+.ppt-options button {
+  padding: 0.6em 1.2em;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #0ff;
+  background-color: black;
+  border: 2px solid #0ff;
+  border-radius: 8px;
+  cursor: pointer;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff inset;
+  transition: transform 0.2s;
+}
+
+.ppt-options button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #0ff, 0 0 25px #0ff inset;
+}
+
+.ppt-result {
+  margin-top: 1.5em;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 5px #fff;
+}
+
+
