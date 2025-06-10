@@ -22,6 +22,9 @@
             </div>
             <div class="menu-option" data-target="neon-dices">
                 <span>Neon Dices</span>
+            </div>
+            <div class="menu-option" data-target="simon-says">
+                <span>Simon Says</span>
             </div>    
             <div class="menu-option" data-target="options">
                 <span>Opciones</span>
@@ -95,6 +98,33 @@
             <div id="neon-scores-container" style="display: none; margin-top: 20px;">
                 <h2>🏆 Mejores Puntuaciones</h2>
                 <ul id="neon-scores-list"></ul>
+            </div>
+        </div>
+
+        <div id="simon-says" class="game-screen" style="display: none;">
+            <h1>Simon Says</h1>
+            <div id="simon-buttons-container">
+                <div class="simon-button" id="simon-red" data-color="red"></div>
+                <div class="simon-button" id="simon-green" data-color="green"></div>
+                <div class="simon-button" id="simon-blue" data-color="blue"></div>
+                <div class="simon-button" id="simon-yellow" data-color="yellow"></div>
+            </div>
+            <p id="simon-status">Haz click para empezar</p>
+            <p id="simon-round">Ronda: 0</p>
+
+            <div id="simon-best-score-input-container" style="display: none; margin-top: 20px;">
+                <p style="color: #ffffff; text-shadow: 0 0 5px #ffea00;">¡Nuevo récord! Ingresa tu nombre:</p>
+                <input type="text" id="simon-best-score-name-input" placeholder="Tu nombre" maxlength="15" style="padding: 8px; border-radius: 5px; border: 1px solid #FFD700; background-color: rgba(0,0,0,0.5); color: #fff;">
+                <button id="save-simon-record-btn" style="margin-left: 10px;">Guardar Récord</button>
+            </div>
+
+            <button onclick="showMenu()">🏠 Volver al Menú</button>
+            <button onclick="toggleSimonBestScores()">🏆 Ver Mejores Puntajes</button>
+            <button onclick="startSimonSays()">🔁 Reiniciar Juego</button>
+
+            <div id="simon-best-scores-container" style="display: none;">
+                <h2>Mejores Rondas</h2>
+                <ul id="simon-best-scores-list"></ul>
             </div>
         </div>
 
