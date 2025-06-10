@@ -37,7 +37,10 @@ function showScreen(screenId) {
         startFlappybird();
     } else if (screenId === 'Neon Dices'){
         startNeonDices();
-    } 
+    } else if (screenId === 'simon-says') { 
+        startSimonSays();
+        displaySimonBestScores();
+    }
 }
 
 /*#############################################################################################
@@ -770,4 +773,230 @@ function resetGame() {
 
     // Ocultar el panel de récords si está visible
     document.getElementById("neon-scores-container").style.display = "none";
+}
+
+/*#############################################################################################
+------------------------------------------SIMON SAYS--------------------------------------
+###############################################################################################*/
+
+const simonButtons = document.querySelectorAll('.simon-button');
+const simonStatus = document.getElementById('simon-status');
+const simonRoundDisplay = document.getElementById('simon-round');
+
+let simonSequence = [];
+let playerSequence = [];
+let round = 0;
+let canClick = false;
+
+// Variables para récords
+const MAX_SIMON_BEST_SCORES = 5;
+let simonBestScores = JSON.parse(localStorage.getItem('simonBestScores')) || [];
+
+const buttonColors = ["red", "green", "blue", "yellow"];
+
+// Sonidos para el juego
+const sounds = {
+    red: new Audio('sounds/simon_red.mp3'),
+    green: new Audio('sounds/simon_green.mp3'),
+    blue: new Audio('sounds/simon_blue.mp3'),
+    yellow: new Audio('sounds/simon_yellow.mp3')
+};
+
+function startSimonSays() {
+    document.getElementById("simon-best-score-input-container").style.display = "none";
+    document.getElementById("simon-best-scores-container").style.display = "none";
+    simonSequence = [];
+    playerSequence = [];
+    round = 0;
+    canClick = false;
+    simonStatus.textContent = "Haz click para empezar";
+    simonRoundDisplay.textContent = "Ronda: 0";
+    resetSimonButtonStyles();
+
+    // Eliminar listeners previos para evitar duplicados
+    simonButtons.forEach(button => {
+        button.removeEventListener('click', handleSimonButtonClick);
+    });
+
+    // Añadir el listener para iniciar el juego con un clic en los botones
+    simonButtons.forEach(button => {
+        button.addEventListener('click', handleSimonButtonClick);
+    });
+
+    // El juego realmente empieza con la primera ronda cuando el usuario interactúa
+    simonStatus.textContent = "Presiona cualquier botón para empezar...";
+}
+
+function resetSimonButtonStyles() {
+    simonButtons.forEach(button => {
+        button.style.opacity = '1';
+        button.style.boxShadow = 'none';
+    });
+    document.getElementById('simon-red').style.backgroundColor = '#FF0000';
+    document.getElementById('simon-green').style.backgroundColor = '#00FF00';
+    document.getElementById('simon-blue').style.backgroundColor = '#0000FF';
+    document.getElementById('simon-yellow').style.backgroundColor = '#FFFF00';
+}
+
+
+function nextRound() {
+    round++;
+    simonRoundDisplay.textContent = `Ronda: ${round}`;
+    playerSequence = [];
+    canClick = false;
+    simonStatus.textContent = "Mira la secuencia...";
+
+    // Agrega un color aleatorio a la secuencia
+    const randomColor = buttonColors[Math.floor(Math.random() * buttonColors.length)];
+    simonSequence.push(randomColor);
+
+    playSequence(simonSequence);
+}
+
+function playSequence(sequence) {
+    let i = 0;
+    const interval = setInterval(() => {
+        if (i >= sequence.length) {
+            clearInterval(interval);
+            canClick = true;
+            simonStatus.textContent = "¡Repite la secuencia!";
+            return;
+        }
+
+        const color = sequence[i];
+        lightUpButton(color);
+        i++;
+    }, 800); // Duración de cada luz/sonido en la secuencia
+}
+
+function lightUpButton(color) {
+    const button = document.getElementById(`simon-${color}`);
+    button.style.opacity = '0.6';
+    button.style.boxShadow = `0 0 20px ${getNeonColor(color)}`; // Aplica brillo neón
+    if (sounds[color]) {
+        sounds[color].play();
+    }
+
+    setTimeout(() => {
+        button.style.opacity = '1';
+        button.style.boxShadow = 'none';
+    }, 400); // Duración que el botón permanece encendido
+}
+
+function getNeonColor(color) {
+    switch (color) {
+        case 'red': return '#FF0000'; 
+        case 'green': return '#00FF00';
+        case 'blue': return '#00FFFF'; 
+        case 'yellow': return '#FFFF00';
+        default: return 'none';
+    }
+}
+
+function handleSimonButtonClick(event) {
+    if (!canClick && round === 0) { // Si el juego no ha empezado
+        nextRound(); // Inicia la primera ronda
+        return;
+    }
+
+    if (!canClick) return;
+
+    const clickedColor = event.target.dataset.color;
+    playerSequence.push(clickedColor);
+    lightUpButton(clickedColor); // Reproduce el sonido y la luz del botón presionado
+
+    checkSequence();
+}
+
+function checkSequence() {
+    const lastIndex = playerSequence.length - 1;
+
+    if (playerSequence[lastIndex] !== simonSequence[lastIndex]) {
+        gameOverSimon();
+        return;
+    }
+
+    if (playerSequence.length === simonSequence.length) {
+        canClick = false;
+        simonStatus.textContent = "¡Correcto! Siguiente ronda...";
+        setTimeout(nextRound, 1000);
+    }
+}
+
+function gameOverSimon() {
+    canClick = false;
+    simonStatus.textContent = `¡Perdiste! Alcanzaste la Ronda: ${round -1}`;
+    // Lógica para guardar el récord si es necesario
+    handleNewSimonScore(round - 1); // Guarda la ronda anterior como puntuación
+}
+
+function handleNewSimonScore(newScore) {
+    if (newScore > 0) { // Solo si el jugador superó la ronda 0
+        const simonScoreInputContainer = document.getElementById('simon-best-score-input-container');
+        simonScoreInputContainer.style.display = 'block';
+
+        const simonScoreNameInput = document.getElementById('simon-best-score-name-input');
+        simonScoreNameInput.value = localStorage.getItem('lastSimonUsername') || "Anónimo";
+        simonScoreNameInput.focus();
+
+        const saveSimonRecordBtn = document.getElementById('save-simon-record-btn');
+        saveSimonRecordBtn.onclick = () => {
+            const enteredName = simonScoreNameInput.value.trim();
+            const username = enteredName || "Anónimo";
+            localStorage.setItem('lastSimonUsername', username);
+
+            updateSimonBestScoresInternal(newScore, username);
+
+            simonScoreInputContainer.style.display = 'none';
+            displaySimonBestScores();
+        };
+    }
+}
+
+function updateSimonBestScoresInternal(newScore, user) {
+    let simonBestScores = JSON.parse(localStorage.getItem('simonBestScores')) || [];
+    simonBestScores.push({ score: newScore, user: user });
+    simonBestScores.sort((a, b) => b.score - a.score); // Ordena de mayor a menor
+
+    if (simonBestScores.length > MAX_SIMON_BEST_SCORES) {
+        simonBestScores = simonBestScores.slice(0, MAX_SIMON_BEST_SCORES);
+    }
+    localStorage.setItem('simonBestScores', JSON.stringify(simonBestScores));
+}
+
+function displaySimonBestScores() {
+    const simonBestScores = JSON.parse(localStorage.getItem('simonBestScores')) || [];
+    const simonBestScoresList = document.getElementById('simon-best-scores-list');
+    simonBestScoresList.innerHTML = '';
+
+    if (simonBestScores.length === 0) {
+        simonBestScoresList.innerHTML = '<li>No hay récords aún.</li>';
+    } else {
+        simonBestScores.forEach((record, index) => {
+            const listItem = document.createElement('li');
+            const rankAndName = document.createElement('span');
+            rankAndName.textContent = `${index + 1}. ${record.user}`;
+
+            const scoreValue = document.createElement('span');
+            scoreValue.textContent = `${record.score} rondas`;
+
+            listItem.appendChild(rankAndName);
+            listItem.appendChild(scoreValue);
+
+            if (index === 0) {
+                listItem.classList.add('record');
+            }
+            simonBestScoresList.appendChild(listItem);
+        });
+    }
+}
+
+function toggleSimonBestScores() {
+    const container = document.getElementById('simon-best-scores-container');
+    if (container.style.display === 'none' || container.style.display === '') {
+        displaySimonBestScores();
+        container.style.display = 'block';
+    } else {
+        container.style.display = 'none';
+    }
 }
